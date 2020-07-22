@@ -12,11 +12,11 @@ from statistics import mean, median, mode
 style.use('ggplot')
 import time
 
-stock = 'AMBUJACEM'
+stock = 'AXISBANK' #Choose any of the nifty stocks here
 
 
 def process_data(stock_name):
-    df = pd.read_csv('data/daily/{}.csv'.format(stock.capitalize()))
+    df = pd.read_csv('data/daily/{}.csv'.format(stock.capitalize())) #Finds the file in the path where save_custom_data.py saves data
     df.index = df['date']
     df = df.drop_duplicates()
     data = OrderedDict()
@@ -47,14 +47,11 @@ def handle_data(context, data):
     
     curr_price = data.history(context.asset, 'price', bar_count= 1,
                               frequency="1d").mean()
-##    long_mavg = data.history(context.asset, 'price', bar_count=200,
-##                             frequency="1d").mean()
-    rsi = mean(RSI(short_mavg, n=avg_days))
     open_orders = get_open_orders()
 
     if context.asset not in open_orders:
         if curr_price > bollinger_high :
-            order(context.asset, -1)
+            order(context.asset, -1) #-1 indicates selling 1 stock
         elif curr_price < bollinger_low:
             order(context.asset, 1)
     record(price=data.current(symbol(stock), 'price'), short_mavg=short_mavg,
@@ -78,21 +75,3 @@ perf = zipline.run_algorithm(start=start, end=end, initialize=initialize,
                             trading_calendar=nse_cal, capital_base=10000,
                             handle_data=handle_data, analyze = analyze,
                             data_frequency ='daily', data=panel)
-
-
-##import pyfolio as pf
-##import numpy as np
-##returns, positions, transactions = pf.utils.extract_rets_pos_txn_from_zipline(perf)
-##benchmark_period_return = perf['benchmark_period_return']
-##
-### Convert benchmark returns to daily returns
-###daily_returns = (1 + benchmark_period_return) / (1 + benchmark_period_return.shift()) - 1
-##daily_benchmark_returns = np.exp(np.log(benchmark_period_return + 1.0).diff()) - 1
-##
-### Create tear sheet
-##pf.create_full_tear_sheet(returns, positions=positions,
-##                          transactions=transactions,
-##                          benchmark_rets=daily_benchmark_returns)
-
-
-
