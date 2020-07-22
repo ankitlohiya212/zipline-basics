@@ -16,7 +16,7 @@ stock = 'AXISBANK' #Choose any of the nifty stocks here
 
 
 def process_data(stock_name):
-    df = pd.read_csv('data/daily/{}.csv'.format(stock.capitalize())) #Finds the file in the path where save_custom_data.py saves data
+    df = pd.read_csv('data/daily/{}.csv'.format(stock.capitalize())) #Finds the file in the path where save_data_for_ingest.py saves data
     df.index = df['date']
     df = df.drop_duplicates()
     data = OrderedDict()
