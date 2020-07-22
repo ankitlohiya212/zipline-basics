@@ -16,11 +16,7 @@ style.use('ggplot')
 
 from yahoo_finance_api import YahooFinance as yf
 import nsepy
-import nsepy.symbols
 from nsepy import get_history
-#Can use nsetools as well using pip install nsetools
-# API KEY = My2n5erdkggvGrB2hobZ
-
     
 def RSI(prices, n=25):
     deltas = np.diff(prices)
@@ -153,55 +149,6 @@ def plotData(stock, last_hm_days=365):
 
 #plotData('shreecem', 650)
 #plotDataYF('INFY',result_range = '12mo',interval = '1d', MA = 20)
-def buy_sell_hold(close_prices):
-    rsis = RSI(close_prices)
-    bought = 0
-    buy_price = 0
-    tot_profit = 0
-    tot_buys = []
-    investment = 0
-    profit_percent = 0
-    start, time_invested = 0, 0
-    for num, rsi in enumerate(rsis):
-        if rsi >= 70 and bought and (close_prices[num] - buy_price) > 0:
-            avg_price = sum(tot_buys)/len(tot_buys)
-            profit = (close_prices[num] - avg_price) * bought
-            tot_profit += profit
-            time_invested += num - start
-            profit_percent = profit/(avg_price*bought)*100
-            print("Selling Stock at ", close_prices[num])
-            print("% profit = ", profit_percent )
-            tot_buys = []
-            bought = 0
-        elif rsi <= 30:
-            bought += 1
-            buy_price = close_prices[num]
-            start = num
-            tot_buys.append(buy_price)
-            investment += buy_price
-            print("Buying Stock at ", buy_price)
-    if bought:
-        avg_price = sum(tot_buys)/len(tot_buys)
-        profit = (close_prices[num] - avg_price) * bought
-        tot_profit += profit
-        time_invested += num - start
-        profit_percent = profit/(avg_price*bought)*100
-        print("Selling Stock at ", close_prices[num])
-        print("% profit = ", profit_percent )
-        tot_buys = []
-        bought = 0
-        
-    return tot_profit,investment, time_invested
-
-##df = pullData('yesBank',5000)
-##closep = df['Close'].values.tolist()
-##profit, investment, time_invested = buy_sell_hold(closep)
-##tot_profit_percent = profit/investment
-##onetime_pp = (closep[-1] - closep[0]) / closep[0]
-##print('tot_profit_percent = ', tot_profit_percent)
-##print("onetime_pp = ", onetime_pp)
-##print("time_invested = " , time_invested)
-
 
 
 #plotData('DMART', 20, '2019/01/01', '2020/02/18', index = False)
@@ -283,54 +230,4 @@ def plotDataYF(stockName, result_range = '1mo',interval = '15m', MA = 10):
     plt.margins(0,0)
     plt.show()
 
-"""
-
-
-"""
-df = get_history(symbol= 'INFY',start=date(2019,1,1),end=date(2019,12,31))
-df.plot()
-plt.show()
-"""
-
-
-
-
-"""
-def animate(i):
-	plotDataYF('INFY',result_range = '7d',interval = '1m', MA = 300)
-fig = plt.figure()
-ani = animation.FuncAnimation(fig, animate, interval = 60000)
-plt.show()
-"""
-
-
-
-
-"""
-while True:
-    Stock = input("Enter Stock Name : ")
-    Stock = Stock.upper()
-    index = bool(int(input("Is Index? : 0/1 ")))
-    if not index :
-        symbol_df =  nsepy.symbols.get_symbol_list()
-        symbol_list = symbol_df['SYMBOL'].tolist()
-        if Stock in symbol_list:
-            from_date = input("From Date: YYYY/MM/DD ")
-            to_date = input("To : YYYY/MM/DD ")
-            mov_avg = int(input("Moving Average : "))
-        else:
-            print("These are the valid stock names : ", symbol_list)
-            continue
-        
-    else :
-        indices_list = nsepy.live.NSE_INDICES
-        if Stock in indices_list :
-            from_date = input("From Date: YYYY/MM/DD ")
-            to_date = input("To : YYYY/MM/DD ")
-            mov_avg = int(input("Moving Average : "))
-        else:
-            print("These are the valid indices names : ", indices_list)
-            continue
-        
-    plotData(Stock, mov_avg, from_date, to_date, index = index)
 """
