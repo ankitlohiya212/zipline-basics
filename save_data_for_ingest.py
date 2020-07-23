@@ -7,7 +7,7 @@ import requests
 import io
 from PlotFinanceData import pullDataYF
 
-
+#Pulls data using the yahoo_finance_api and processes for the understanding of zipline
 def get_data(stock_name):
     df = pullDataYF(stock_name, result_range = '10y', interval='1d')
     df['Date'] = df.index
@@ -41,7 +41,8 @@ def get_data(stock_name):
 def save_file(stock_name, df):
     file_path = "data/daily/{}.csv".format(stock_name) 
     df.to_csv(file_path, index=False)
-
+    
+#Returns a list of names of all stocks in a given index
 def get_stock_in_index(index):
     index = index.replace(' ', '').lower()
     index = index.replace('finservice', 'finance')
