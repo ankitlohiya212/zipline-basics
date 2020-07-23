@@ -52,6 +52,7 @@ def computeMACD(x, slow=26, fast=12):
 	emafast = ExpMA(x, fast)
 	return emaslow, emafast, emafast - emaslow
 
+#The github repo nsepy could also be used to pull data
 def pullDataNSEpy(stockName, index, from_date, to_date):
     from_date, to_date = from_date.split('/'), to_date.split('/')
     for i in range(len(from_date)):
@@ -60,7 +61,12 @@ def pullDataNSEpy(stockName, index, from_date, to_date):
     df = get_history(symbol=stockName,start=date(from_date[0],from_date[1],from_date[2]),end=date(to_date[0],to_date[1],to_date[2]), index = index)
     return df
 
-# Pulling data Without internet
+#The github repo yahoo_finance_api could also be used to pull data
+def pullDataYF(stockName, result_range = '1mo',interval = '15m'):
+    df = yf(stockName+'.NS', result_range = result_range,interval = interval).result
+    return df
+
+# Pulling data from data directory
 def pullData(stock, last_hm_days = 365):
     df = pd.read_csv('data/daily/{}.csv'.format(stock.capitalize()))
     return df[-last_hm_days:]
@@ -148,86 +154,3 @@ def plotData(stock, last_hm_days=365):
 
 
 #plotData('shreecem', 650)
-#plotDataYF('INFY',result_range = '12mo',interval = '1d', MA = 20)
-
-
-#plotData('DMART', 20, '2019/01/01', '2020/02/18', index = False)
-
-
-
-
-
-def pullDataYF(stockName, result_range = '1mo',interval = '15m'):
-    df = yf(stockName+'.NS', result_range = result_range,interval = interval).result
-    return df
-"""
-def plotDataYF(stockName, result_range = '1mo',interval = '15m', MA = 10):
-    #fig.clf()
-    fig = plt.figure()
-    df = pullDataYF(stockName, result_range = result_range,interval = interval)
-    data = df.reset_index().values
-    openp, highp, lowp, closep, vol =  df['Open'].values, df['High'].values, df['Low'].values, df['Close'].values, df['Volume'].values
-    date_time, xdays = [], []
-    data[:,0] = mdates.date2num(data[:,0])
-    ndays = np.unique(np.trunc(list(data[:,0])), return_index=True)
-    data2 = np.hstack([np.arange(data[:,0].size)[:, np.newaxis], data[:,1:]])
-    for n in np.arange(len(ndays[0])):
-        xdays.append(datetime.date.isoformat(num2date(data[ndays[1],0][n])))
-
-    label1 = str(MA)+ ' SMA'
-    df['SMA'] = df['Close'].rolling(MA).mean()
-    df['std'] = df['Close'].rolling(MA).std()
-    df['Bollinger High'] = df['SMA'] + (df['std']*2)
-    df['Bollinger Low'] = df['SMA'] - (df['std']*2)
-    SP = len(data[:,0][MA-1:])
-    
-    ax = plt.subplot2grid((6,4),(1,0), rowspan = 4, colspan = 4)
-    ax.set_xticks(data2[ndays[1],0])
-    ax.plot(data2[:,0], df['SMA'], label = label1, color = 'black')
-    ax.plot(data2[:,0], df['Bollinger High'],color = 'red')
-    ax.plot(data2[:,0], df['Bollinger Low'], color = 'green')
-    plt.legend(fancybox = True, prop = {'size':7})
-    plt.setp(ax.get_xticklabels(), visible = False)
-    ax.set_ylabel('Price And Volume')
-    ax.set_xlabel('Date')
-    candlestick_ohlc(ax, data2, width=0.5, colorup='green', colordown='red')
-    print("Candlestick done")
-
-    volmin = 0
-    axv = ax.twinx()
-    axv.axes.yaxis.set_ticklabels([])
-    axv.fill_between(list(data2[:,0]), volmin ,vol, facecolor = "#00ffe8", alpha = 0.5)
-    axv.grid(False)
-    axv.set_ylim(0,4*max(vol))
-    print("Volume done")
-    
-    ax0 = plt.subplot2grid((6,4),(0,0), sharex =ax , rowspan = 1, colspan = 4)
-    rsi = RSI(closep)
-    ax0.plot(data2[:,0], rsi)
-    ax0.axhline(70, color = 'red')
-    ax0.axhline(30, color = 'green')
-    ax0.set_yticks([30,70])
-    #plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(prune = 'lower'))
-    plt.ylabel('RSI')
-    plt.setp(ax0.get_xticklabels(), visible = False)
-    print("RSI done")
-
-    ax2 = plt.subplot2grid((6,4),(5,0), sharex =ax , rowspan = 1, colspan = 4)
-    nslow = 26
-    nfast = 12
-    nema = 9
-    emaslow, emafast, macd = computeMACD(closep)
-    ema9 = ExpMA(macd, nema)
-    ax2.plot(data2[:,0], macd)
-    ax2.plot(data2[:,0], ema9)
-    ax2.fill_between(list(data2[:,0]), macd-ema9, 0, facecolor = "#00ffe8", edgecolor = "#00ffe8" )
-    plt.ylabel("MACD")
-    ax2.set_xticklabels(xdays, rotation=45, horizontalalignment='right')
-    print("MACD done")
-
-    plt.suptitle(stockName )
-    plt.subplots_adjust(left = 0.09 ,bottom = 0.16,right= 0.98, top = 0.95, wspace=0.2 , hspace=0)
-    plt.margins(0,0)
-    plt.show()
-
-"""
